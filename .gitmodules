@@ -1,0 +1,9 @@
+[submodule "Utilities"]
+	path = Utilities
+	url = https://github.com/GataullinRR/Utilities
+[submodule "Utilities.ASPCore31"]
+	path = Utilities.ASPCore31
+	url = https://github.com/GataullinRR/Utilities.ASPCore31
+[submodule "Utilities.EFCore31"]
+	path = Utilities.EFCore31
+	url = https://github.com/GataullinRR/Utilities.EFCore31
