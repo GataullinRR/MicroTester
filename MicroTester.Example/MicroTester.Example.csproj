@@ -1,10 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\MicroTester.Db\MicroTester.Db.csproj" />
     <ProjectReference Include="..\Microtester.Integration\MicroTester.Integration.csproj" />
     <ProjectReference Include="..\Utilities.ASPCore31\Utilities.ASPCore31\Utilities.ASPCore31.csproj" />
     <ProjectReference Include="..\Utilities.EFCore31\Utilities.EFCore31\Utilities.EFCore31.csproj" />

@@ -16,7 +16,15 @@ namespace MicroTester.Db
         [Required]
         public string Body { get; set; }
 
-        [Required]
-        public HttpMethod Method { get; set; }
+        protected HttpMessage() 
+        {
+            
+        }
+        protected HttpMessage(DateTime creationTime, string headers, string body)
+        {
+            CreationTime = creationTime;
+            Headers = headers ?? throw new ArgumentNullException(nameof(headers));
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+        }
     }
 }
