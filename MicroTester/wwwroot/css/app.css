@@ -1,7 +1,13 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+div .scrollable {
+    position: absolute;
+    overflow-y: scroll;
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    height: 100%;
 }
 
 a, .btn-link {

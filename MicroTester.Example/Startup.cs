@@ -38,6 +38,7 @@ namespace MicroTester.Example
             {
                 app.UseHttpRecorder();
                 app.UseDeveloperExceptionPage();
+                app.Fram
             }
 
             app.UseRouting();

@@ -1,7 +1,27 @@
 ﻿@page "/"
 
-<h1>Hello, world!</h1>
+@*(header + footer) https://www.codeply.com/go/ouc3hddx5i*@
+<div class="container-fluid h-100 d-flex flex-column">
+    <div class="row flex-fill" style="min-height:0">
+        <div class="col border mh-100" style="overflow-y: scroll; max-width:350px;">
+            <select class="custom-select custom-select-sm">
+                <option selected>Open this select menu</option>
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+            </select>
+        </div>
 
-Welcome to your new app.
+        <div class="col border mh-100" style="overflow-y: scroll;">
+            Request
+        </div>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+        <div class="col border mh-100" style="overflow-y: scroll;">
+            Expected response
+        </div>
+
+        <div class="col border mh-100" style="overflow-y: scroll;">
+            Actual response
+        </div>
+    </div>
+</div>
