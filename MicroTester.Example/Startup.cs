@@ -16,12 +16,12 @@ namespace MicroTester.Example
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
-
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -30,6 +30,10 @@ namespace MicroTester.Example
             services.AddBasicTestCaseExtractor();
 
             services.AddControllers();
+            var assembly = typeof(ICaseExtractor).Assembly;
+            //services.AddControllers()
+            //    .AddApplicationPart(assembly)
+            //    .AddControllersAsServices();
             services.AddRazorPages();
         }
 
@@ -47,7 +51,9 @@ namespace MicroTester.Example
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapRazorPages();
                 endpoints.MapControllers();
+                endpoints.MapFallbackToFile("index.html");
             });
         }
     }

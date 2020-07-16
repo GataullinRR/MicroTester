@@ -1,0 +1,14 @@
+﻿@if (Response != null)
+{
+    <pre style="white-space:pre-wrap">
+<span>Status: @Response.StatusCode</span>
+<span>Duration: @Response.Duration.ToString("F0") ms</span>
+<span>@Response.Headers</span>
+<span>@Response.Body</span>
+    </pre>
+}
+
+@code {
+    [Parameter]
+    public HttpResponse? Response { get; set; }
+}

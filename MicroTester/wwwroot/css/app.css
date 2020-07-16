@@ -1,5 +1,9 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+.selected {
+    background-color:#d6d5d5;
+}
+
 div .scrollable {
     position: absolute;
     overflow-y: scroll;

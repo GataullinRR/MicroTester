@@ -1,27 +1,69 @@
 ﻿@page "/"
+@inject IMicroTesterClient MicroTester;
 
 @*(header + footer) https://www.codeply.com/go/ouc3hddx5i*@
 <div class="container-fluid h-100 d-flex flex-column">
     <div class="row flex-fill" style="min-height:0">
         <div class="col border mh-100" style="overflow-y: scroll; max-width:350px;">
-            <select class="custom-select custom-select-sm">
-                <option selected>Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
+            @foreach (var testCase in _cases)
+            {
+                var selectionClass = testCase == _selectedCase ? "selected" : "";
+                <div class="my-3 @selectionClass" @onclick="() => SelectCaseAsync(testCase)">@testCase.Name</div>
+            }
         </div>
 
         <div class="col border mh-100" style="overflow-y: scroll;">
-            Request
+            @if(_selectedStep != null)
+            {
+                <pre style="white-space:pre-wrap">
+<span>@_selectedStep.Request.Headers</span>
+<span>@_selectedStep.Request.Body</span>
+                </pre>
+            }
         </div>
 
         <div class="col border mh-100" style="overflow-y: scroll;">
-            Expected response
+            <HttpResponseView Response="_selectedStep?.Response" />
         </div>
 
         <div class="col border mh-100" style="overflow-y: scroll;">
-            Actual response
+            <HttpResponseView Response="_actualResponse"/>
         </div>
     </div>
 </div>
+
+@code{ 
+    readonly List<TestCase> _cases = new List<TestCase>();
+    TestCase? _selectedCase;
+    TestCaseStep? _selectedStep;
+    HttpResponse? _actualResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new ListCasesRequest(0, 100);
+        var response = await MicroTester.ListCasesAsync(request);
+        _cases.AddRange(response.Cases);
+        _selectedCase = _cases.FirstOrDefault();
+        _selectedStep = _selectedCase?.Steps?.FirstOrDefault();
+
+        await base.OnInitializedAsync();
+    }
+
+    async Task SelectCaseAsync(TestCase testCase)
+    {
+        _selectedCase = testCase;
+        _selectedStep = testCase.Steps.FirstOrDefault();
+        _actualResponse = null;
+    }
+
+    async Task RunAsync()
+    {
+        using var client = new HttpClient();
+        var dd = new HttpRequestMessage(new HttpMethod(_selectedStep.Request.Method), _selectedStep.Request.URI);
+        dd.Content = new StringContent(_selectedStep.Request.Body);
+        dd.Headers.Add("123", "Hello");
+        var response = await client.SendAsync(dd);
+        var content = await response.Content.ReadAsStringAsync();
+        _actualResponse = new HttpResponse(DateTime.UtcNow, "headers", content, response.StatusCode, 0);
+    }
+}
