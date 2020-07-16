@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microtester.Integration;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace MicroTester.Example
 {
@@ -29,6 +30,7 @@ namespace MicroTester.Example
             services.AddBasicTestCaseExtractor();
 
             services.AddControllers();
+            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,14 +38,12 @@ namespace MicroTester.Example
         {
             if (env.IsDevelopment())
             {
+                app.UseBlazorFrameworkFiles();
+                app.UseStaticFiles();
                 app.UseHttpRecorder();
-                app.UseDeveloperExceptionPage();
-                app.Fram
             }
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
