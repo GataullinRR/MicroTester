@@ -13,6 +13,8 @@ namespace MicroTester.Db
 
         public DateTime CreationTime { get; set; }
 
+        public bool IsPinned { get; set; }
+
         [Required]
         public string Name { get; set; }
 

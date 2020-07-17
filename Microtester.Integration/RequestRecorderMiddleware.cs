@@ -10,6 +10,7 @@ using System.Net;
 using MicroTester.API;
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 //using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
 namespace Microtester.Integration
@@ -45,7 +46,7 @@ namespace Microtester.Integration
             
             context.Response.Body = originalResponse;
 
-            if (context.Request.Path != new PathString("/" + MicroTesterClient.ListCasesEndpointPath) 
+            if (MicroTesterAPIKeys.AllPaths.All(p => p != context.Request.Path)
                 && context.Request.Path != new PathString("/index.html")
                 && responseBodyLength <= options.Value.MaxBodySize)
             {

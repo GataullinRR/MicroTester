@@ -10,8 +10,6 @@ using Utilities.Extensions;
 
 namespace Microtester.Integration
 {
-
-
     [Controller]
     [Microsoft.AspNetCore.Components.Route("")]
     public class MainController : ControllerBase
@@ -24,21 +22,32 @@ namespace Microtester.Integration
         }
 
         [HttpPost]
-        [Microsoft.AspNetCore.Mvc.Route(MicroTesterClient.ListCasesEndpointPath)]
+        [Microsoft.AspNetCore.Mvc.Route(MicroTesterAPIKeys.ListCasesEndpointPath)]
         public async Task<IActionResult> ListCases([FromBody]ListCasesRequest request)
         {
             var cases = await _db.Cases
-                .Include(c => c.Steps)
-                .ThenInclude(s => s.Request)
-                .Include(c => c.Steps)
-                .ThenInclude(s => s.Response)
-                //.IncludeGroup(Groups.All, _db)
-                .OrderByDescending(c => c.CreationTime)
+                .AsNoTracking()
+                .IncludeGroup(Groups.All, _db)
+                .OrderByDescending(c => c.IsPinned)
+                .ThenByDescending(c => c.CreationTime)
                 .Skip(request.From)
                 .Take(request.To - request.From)
                 .ToArrayAsync();
 
             return Ok(new ListCasesResponse(cases));
+        }
+
+        [HttpPost]
+        [Microsoft.AspNetCore.Mvc.Route(MicroTesterAPIKeys.UpdateCasesEndpointPath)]
+        public async Task<IActionResult> UpdateCases([FromBody] UpdateCasesRequest request)
+        {
+            foreach (var testCase in request.Cases)
+            {
+                _db.Entry(testCase).State = EntityState.Modified;
+            }
+            await _db.SaveChangesAsync();
+
+            return Ok(new UpdateCasesResponse());
         }
     }
 }

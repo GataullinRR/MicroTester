@@ -1,0 +1,21 @@
+﻿@inject IMicroTesterClient MicroTester;
+
+@if (TestCase.IsPinned)
+{
+    <InlineButton @onclick="() => SetPinnedStateAsync(false)">Unpin</InlineButton>
+}
+else
+{
+    <InlineButton @onclick="() => SetPinnedStateAsync(true)">Pin</InlineButton>
+}
+
+@code {
+    [Parameter]
+    public TestCase TestCase { get; set; }
+
+    private async Task SetPinnedStateAsync(bool isPinned)
+    {
+        TestCase.IsPinned = isPinned;
+        await MicroTester.UpdateCasesAsync(new UpdateCasesRequest(TestCase));
+    }
+}
