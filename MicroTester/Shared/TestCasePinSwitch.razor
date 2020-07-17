@@ -1,4 +1,5 @@
 ﻿@inject IMicroTesterClient MicroTester;
+@inject IEventHub EventHub;
 
 @if (TestCase.IsPinned)
 {
@@ -13,9 +14,13 @@ else
     [Parameter]
     public TestCase TestCase { get; set; }
 
+    [Parameter]
+    public Func<Task> PinStateChangedAsync { get; set; }
+
     private async Task SetPinnedStateAsync(bool isPinned)
     {
         TestCase.IsPinned = isPinned;
         await MicroTester.UpdateCasesAsync(new UpdateCasesRequest(TestCase));
+        await EventHub.FireCasesStateChangedAsync();
     }
 }

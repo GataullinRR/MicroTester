@@ -1,56 +1,58 @@
 ﻿@page "/"
+@implements IDisposable
 @inject IMicroTesterClient MicroTester;
+@inject IEventHub EventHub;
 
 @*(header + footer) https://www.codeply.com/go/ouc3hddx5i*@
-    <CascadingValue Name="@CascadingParameters.IsEnabled" Value="!_isExecuting">
-        <div class="container-fluid h-100 d-flex flex-column">
-            <div class="row flex-fill" style="min-height:0">
-                <div class="col border mh-100" style="overflow-y: scroll; max-width:350px;">
-                    @foreach (var testCase in _cases)
-                    {
-                        var isSelected = testCase == _selectedCase;
-                        var selectionClass = isSelected ? "selected" : "";
-                        <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCase)">
-                            @testCase.Name
-                            <span style="float:right">
-                                @if (!_isExecuting || !isSelected)
+<CascadingValue Name="@CascadingParameters.IsEnabled" Value="!_isExecuting">
+    <div class="container-fluid h-100 d-flex flex-column">
+        <div class="row flex-fill" style="min-height:0">
+            <div class="col border mh-100" style="overflow-y: scroll; max-width:350px;">
+                @foreach (var testCase in _cases)
+                {
+                    var isSelected = testCase == _selectedCase;
+                    var selectionClass = isSelected ? "selected" : "";
+                    <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCase)">
+                        @testCase.Name
+                        <span style="float:right">
+                            @if (!_isExecuting || !isSelected)
+                            {
+                                <InlineButton @onclick="() => RunAsync(testCase)">Execute</InlineButton>
+                            }
+                            else
+                            {
+                                if (_cts.IsCancellationRequested)
                                 {
-                                    <InlineButton @onclick="() => RunAsync(testCase)">Execute</InlineButton>
+                                    <span>Cancelling...</span>
                                 }
                                 else
                                 {
-                                    if (_cts.IsCancellationRequested)
-                                    {
-                                        <span>Cancelling...</span>
-                                    }
-                                    else
-                                    {
-                                        <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
-                                            <InlineButton @onclick="() => CancelAsync()">Cancel</InlineButton>
-                                        </CascadingValue>
-                                    }
+                                    <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
+                                        <InlineButton @onclick="() => CancelAsync()">Cancel</InlineButton>
+                                    </CascadingValue>
                                 }
+                            }
 
-                                <TestCasePinSwitch TestCase="testCase"/>
-                            </span>
-                        </div>
-                    }
-                </div>
+                            <TestCasePinSwitch TestCase="testCase"/>
+                        </span>
+                    </div>
+                }
+            </div>
 
-                <div class="col border mh-100" style="overflow-y: scroll;">
-                    <HttpRequestView Request="_selectedStep?.Request" />
-                </div>
+            <div class="col border mh-100" style="overflow-y: scroll;">
+                <HttpRequestView Request="_selectedStep?.Request" />
+            </div>
 
-                <div class="col border mh-100" style="overflow-y: scroll;">
-                    <HttpResponseView Response="_selectedStep?.Response" />
-                </div>
+            <div class="col border mh-100" style="overflow-y: scroll;">
+                <HttpResponseView Response="_selectedStep?.Response" />
+            </div>
 
-                <div class="col border mh-100" style="overflow-y: scroll;">
-                    <HttpResponseView Response="_actualResponse" />
-                </div>
+            <div class="col border mh-100" style="overflow-y: scroll;">
+                <HttpResponseView Response="_actualResponse" />
             </div>
         </div>
-    </CascadingValue>
+    </div>
+</CascadingValue>
 
 @code{ 
     readonly List<TestCase> _cases = new List<TestCase>();
@@ -62,13 +64,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new ListCasesRequest(0, 30);
-        var response = await MicroTester.ListCasesAsync(request);
-        _cases.AddRange(response.Cases);
-        _selectedCase = _cases.FirstOrDefault();
-        _selectedStep = _selectedCase?.Steps?.FirstOrDefault();
+        EventHub.CasesStateChangedAsync += LoadListAsync;
+        await LoadListAsync();
 
         await base.OnInitializedAsync();
+    }
+
+    void IDisposable.Dispose()
+    {
+        EventHub.CasesStateChangedAsync -= LoadListAsync;
+    }
+
+    private async Task LoadListAsync()
+    {
+        var request = new ListCasesRequest(0, 30);
+        var response = await MicroTester.ListCasesAsync(request);
+        _cases.Clear();
+        _cases.AddRange(response.Cases);
+        _selectedCase = _cases.FirstOrDefault(c => c.Id == _selectedCase?.Id);
+        _selectedStep = _selectedCase?.Steps?.FirstOrDefault(s => s.Id == _selectedStep?.Id);
+        _actualResponse = null;
+
+        StateHasChanged(); // Because _cases is not ObservableCollection
     }
 
     private async Task SelectCaseAsync(TestCase testCase)
@@ -140,7 +157,7 @@
         return request;
     }
 
-    async Task CancelAsync()
+    private async Task CancelAsync()
     {
         _cts.Cancel();
     }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MicroTester.API;
+using Utilities.Extensions;
 
 namespace MicroTester
 {
@@ -21,6 +22,7 @@ namespace MicroTester
             var services = builder.Services;
             services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             services.AddMicroTesterClient();
+            services.AddSingleton<IEventHub, EventHub>();
 
             await builder.Build().RunAsync();
         }
