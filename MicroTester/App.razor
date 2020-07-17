@@ -1,3 +1,6 @@
+@inject IEnumerable<Microsoft.Extensions.Hosting.IHostedService> HostedServices;
+@implements IAsyncDisposable;
+
 <Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
@@ -8,3 +11,33 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code { 
+    // Keep in mind, that children's OnInitializedAsync will be called in parallel with parent's one
+    protected override async Task OnInitializedAsync()
+    {
+        foreach (var service in HostedServices)
+        {
+            await service.StartAsync(default);
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    async ValueTask IAsyncDisposable.DisposeAsync()
+    {
+        foreach (var service in HostedServices)
+        {
+            await service.StopAsync(default);
+
+            if (service is IAsyncDisposable asyncDisposable)
+            {
+                await asyncDisposable.DisposeAsync();
+            }
+            else if (service is IDisposable disposable)
+            {
+                disposable.Dispose();
+            }
+        }
+    }
+}

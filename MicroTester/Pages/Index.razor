@@ -83,7 +83,9 @@
         _cases.AddRange(response.Cases);
         _selectedCase = _cases.FirstOrDefault(c => c.Id == _selectedCase?.Id);
         _selectedStep = _selectedCase?.Steps?.FirstOrDefault(s => s.Id == _selectedStep?.Id);
-        _actualResponse = null;
+        _actualResponse = _selectedStep == null
+            ? null
+            : _actualResponse;
 
         StateHasChanged(); // Because _cases is not ObservableCollection
     }

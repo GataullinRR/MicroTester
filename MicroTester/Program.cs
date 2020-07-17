@@ -23,6 +23,7 @@ namespace MicroTester
             services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             services.AddMicroTesterClient();
             services.AddSingleton<IEventHub, EventHub>();
+            services.AddHostedService<CasesChangedNotifier>(); // Doesn't work for Blazor out of the box, see workaround inside App.razor
 
             await builder.Build().RunAsync();
         }
