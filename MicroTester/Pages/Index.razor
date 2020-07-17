@@ -12,35 +12,31 @@
                     var selectionClass = isSelected ? "selected" : "";
                     <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCase)">
                         @testCase.Name
-                        @if (!_isExecuting || !isSelected)
-                        {
-                            <InlineButton @onclick="() => RunAsync(testCase)">Execute</InlineButton>
-                        }
-                        else
-                        {
-                            if (_cts.IsCancellationRequested)
+                        <span style="float:right">
+                            @if (!_isExecuting || !isSelected)
                             {
-                                <span>Cancelling...</span>
+                                <InlineButton @onclick="() => RunAsync(testCase)">Execute</InlineButton>
                             }
                             else
                             {
-                                <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
-                                    <InlineButton @onclick="() => CancelAsync()">Cancel</InlineButton>
-                                </CascadingValue>
+                                if (_cts.IsCancellationRequested)
+                                {
+                                    <span>Cancelling...</span>
+                                }
+                                else
+                                {
+                                    <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
+                                        <InlineButton @onclick="() => CancelAsync()">Cancel</InlineButton>
+                                    </CascadingValue>
+                                }
                             }
-                        }
+                        </span>
                     </div>
                 }
             </div>
 
             <div class="col border mh-100" style="overflow-y: scroll;">
-                @if (_selectedStep != null)
-                {
-                    <pre class="wrapped">
-<span>@_selectedStep.Request.Headers</span>
-<span>@_selectedStep.Request.Body</span>
-                    </pre>
-                }
+                <HttpRequestView Request="_selectedStep?.Request"></HttpRequestView>
             </div>
 
             <div class="col border mh-100" style="overflow-y: scroll;">
@@ -55,12 +51,12 @@
 </CascadingValue>
 
 @code{ 
-        readonly List<TestCase> _cases = new List<TestCase>();
-        TestCase? _selectedCase;
-        TestCaseStep? _selectedStep;
-        HttpResponse? _actualResponse;
-        bool _isExecuting;
-        System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
+    readonly List<TestCase> _cases = new List<TestCase>();
+    TestCase? _selectedCase;
+    TestCaseStep? _selectedStep;
+    HttpResponse? _actualResponse;
+    bool _isExecuting;
+    System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
     {
@@ -88,15 +84,20 @@
             await SelectCaseAsync(testCase);
 
             using var client = new HttpClient();
-            var dd = new HttpRequestMessage(new HttpMethod(_selectedStep.Request.Method), _selectedStep.Request.URI);
+            var request = new HttpRequestMessage(new HttpMethod(_selectedStep.Request.Method), _selectedStep.Request.URI);
             if (_selectedStep.Request.Body != null)
             {
-                dd.Content = new StringContent(_selectedStep.Request.Body);
+                request.Content = new StringContent(_selectedStep.Request.Body);
             }
-            dd.Headers.Add("123", "Hello");
-            using var response = await client.SendAsync(dd, HttpCompletionOption.ResponseContentRead, _cts.Token);
+            foreach (var header in _selectedStep.Request.Headers)
+            {
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            using var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, _cts.Token);
             var content = await response.Content.ReadAsStringAsync();
-            _actualResponse = new HttpResponse(DateTime.UtcNow, "headers", content, content.Length, response.StatusCode, 0);
+            var headers = response.Headers.Concat(response.Content.Headers);
+            _actualResponse = new HttpResponse(DateTime.UtcNow, headers, content, content.Length, response.StatusCode, sw.Elapsed.TotalMilliseconds);
         }
         finally
         {

@@ -4,10 +4,15 @@
     background-color:#d6d5d5;
 }
 
-pre .wrapped {
-    overflow-x: auto;
+.wrapped {
+    /*overflow-x: auto;*/
+    /*    white-space: pre-wrap;*/
+    /*word-wrap: break-word;
+    white-space: pre-line;*/
+    overflow-wrap: break-word;
+    /*white-space: pre-line;*/
     white-space: pre-wrap;
-    word-wrap: break-word;
+    /*    line-break: anywhere;*/
 }
 
 div .scrollable {

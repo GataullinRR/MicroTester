@@ -1,11 +1,16 @@
 ﻿@if (Response != null)
 {
-    <pre style="white-space:pre-wrap">
-<span>Status: @Response.StatusCode</span>
-<span>Duration: @Response.Duration.ToString("F0") ms</span>
-<span>@Response.Headers</span>
-<span>@Response.Body</span>
-    </pre>
+    <p>
+        <span>Status: @((int)Response.StatusCode) @Response.StatusCode</span>
+        <br />
+        <span>Duration: @Response.Duration.ToString("F0") ms</span>
+    </p>
+    <p>
+        <HttpHeadersView Headers="Response.Headers" />
+    </p>
+    <p>
+        <span class="wrapped">@Response.Body</span>
+    </p>
 }
 
 @code {

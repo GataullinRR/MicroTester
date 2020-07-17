@@ -88,15 +88,12 @@ namespace Microtester.Integration
                 return new MicroTester.Db.HttpResponse(DateTime.UtcNow, headers, body, responseBodyLength, (HttpStatusCode)context.Response.StatusCode, responseDuration);
             }
 
-            string getHeadersString(IHeaderDictionary headers)
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> getHeadersString(IHeaderDictionary headers)
             {
-                var sb = new StringBuilder();
-                foreach (var kvp in context.Request.Headers)
+                foreach (var kvp in headers)
                 {
-                    sb.AppendLine($"{kvp.Key}:{kvp.Value}");
+                    yield return new KeyValuePair<string, IEnumerable<string>>(kvp.Key, kvp.Value);
                 }
-
-                return sb.ToString();
             }
         }
     }

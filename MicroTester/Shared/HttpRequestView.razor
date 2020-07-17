@@ -1,0 +1,14 @@
+﻿@if (Request != null)
+{
+    <p>
+        <HttpHeadersView Headers="Request.Headers" />
+    </p>
+    <p>
+        <span class="wrapped">@Request.Body</span>
+    </p>
+}
+
+@code {
+    [Parameter]
+    public HttpRequest? Request { get; set; }
+}

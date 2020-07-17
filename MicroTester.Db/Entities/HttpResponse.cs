@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Primitives;
+using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 
@@ -18,7 +20,7 @@ namespace MicroTester.Db
 
         }
 
-        public HttpResponse(DateTime creationTime, string headers, string? body, int bodyLength, HttpStatusCode statusCode, double duration) 
+        public HttpResponse(DateTime creationTime, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, string? body, int bodyLength, HttpStatusCode statusCode, double duration) 
             : base(creationTime, headers, body, bodyLength)
         {
             StatusCode = statusCode;
