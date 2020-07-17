@@ -13,18 +13,20 @@ namespace MicroTester.Db
         [Required]
         public string Headers { get; set; }
 
-        [Required]
-        public string Body { get; set; }
+        public string? Body { get; set; }
+        public int BodyLength { get; set; }
 
         protected HttpMessage() 
         {
             
         }
-        protected HttpMessage(DateTime creationTime, string headers, string body)
+
+        protected HttpMessage(DateTime creationTime, string headers, string? body, int bodyLength)
         {
             CreationTime = creationTime;
             Headers = headers ?? throw new ArgumentNullException(nameof(headers));
-            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Body = body;
+            BodyLength = bodyLength;
         }
     }
 }

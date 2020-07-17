@@ -1,0 +1,12 @@
+﻿@inherits NavLink
+
+<a href="" @attributes="@AdditionalAttributes" disabled="@isDisabled" class="@CssClass" @onclick:preventDefault>
+    @ChildContent
+</a>
+
+@code {
+    [CascadingParameter(Name = CascadingParameters.IsEnabled)]
+    public bool IsEnabled { get; set; } = true;
+
+    bool isDisabled => !IsEnabled;
+}

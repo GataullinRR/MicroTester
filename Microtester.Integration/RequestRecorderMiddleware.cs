@@ -7,6 +7,9 @@ using System.IO;
 using System.Text;
 using System.Diagnostics;
 using System.Net;
+using MicroTester.API;
+using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 //using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
 namespace Microtester.Integration
@@ -23,7 +26,7 @@ namespace Microtester.Integration
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, ICaseExtractor caseExtractor, TestContext db)
+        public async Task InvokeAsync(HttpContext context, ICaseExtractor caseExtractor, TestContext db, IOptions<MicroTesterOptions> options, ILogger<RequestRecorderMiddleware> logger)
         {
             var request = await getRequest();
 
@@ -37,17 +40,26 @@ namespace Microtester.Integration
             context.Response.Body.Position = 0;
             await context.Response.Body.CopyToAsync(originalResponse);
 
+            var responseBodyLength = (int)context.Response.Body.Length;
             var response = await getResponse();
-
+            
             context.Response.Body = originalResponse;
 
-            _unhandledSteps.Add(new TestCaseStep(request, response));
-            var cases = caseExtractor.TryExtractAsync(_unhandledSteps);
-            await foreach (var testCase in cases)
+            if (context.Request.Path != new PathString("/" + MicroTesterClient.ListCasesEndpointPath) 
+                && responseBodyLength <= options.Value.MaxBodySize)
             {
-                await db.Cases.AddAsync(testCase);
+                _unhandledSteps.Add(new TestCaseStep(request, response));
+                var cases = caseExtractor.TryExtractAsync(_unhandledSteps);
+                await foreach (var testCase in cases)
+                {
+                    await db.Cases.AddAsync(testCase);
+                }
+                await db.SaveChangesAsync();
             }
-            await db.SaveChangesAsync();
+            else
+            {
+                logger.LogWarning("Response wont be recorded");
+            }
 
             async Task<MicroTester.Db.HttpRequest> getRequest()
             {
@@ -55,21 +67,25 @@ namespace Microtester.Integration
                 await context.Request.Body.CopyToAsync(requestStream);
                 context.Request.Body = requestStream;
                 context.Request.Body.Position = 0;
-                var body = await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
+                var body = requestStream.Length == 0
+                    ? null
+                    : await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
                 context.Request.Body.Position = 0;
                 var headers = getHeadersString(context.Request.Headers);
                 var query = new Uri($"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}/{context.Request.QueryString}");
 
-                return new MicroTester.Db.HttpRequest(DateTime.UtcNow, query, headers, body, context.Request.Method);
+                return new MicroTester.Db.HttpRequest(DateTime.UtcNow, query, headers, body, (int)requestStream.Length, context.Request.Method);
             }
 
             async Task<MicroTester.Db.HttpResponse> getResponse()
             {
                 context.Response.Body.Position = 0;
-                var body = new StreamReader(context.Response.Body, Encoding.UTF8).ReadToEnd();
+                var body = responseBodyLength == 0
+                    ? null
+                    : new StreamReader(context.Response.Body, Encoding.UTF8).ReadToEnd();
                 var headers = getHeadersString(context.Request.Headers);
 
-                return new MicroTester.Db.HttpResponse(DateTime.UtcNow, headers, body, (HttpStatusCode)context.Response.StatusCode, responseDuration);
+                return new MicroTester.Db.HttpResponse(DateTime.UtcNow, headers, body, responseBodyLength, (HttpStatusCode)context.Response.StatusCode, responseDuration);
             }
 
             string getHeadersString(IHeaderDictionary headers)

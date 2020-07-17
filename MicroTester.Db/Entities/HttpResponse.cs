@@ -17,7 +17,9 @@ namespace MicroTester.Db
         {
 
         }
-        public HttpResponse(DateTime creationTime, string headers, string body, HttpStatusCode statusCode, double duration) : base(creationTime, headers, body)
+
+        public HttpResponse(DateTime creationTime, string headers, string? body, int bodyLength, HttpStatusCode statusCode, double duration) 
+            : base(creationTime, headers, body, bodyLength)
         {
             StatusCode = statusCode;
             Duration = duration;

@@ -18,7 +18,9 @@ namespace MicroTester.Db
         {
 
         }
-        public HttpRequest(DateTime creationTime, Uri query, string headers, string body, string method) : base(creationTime, headers, body)
+
+        public HttpRequest(DateTime creationTime, Uri query, string headers, string? body, int bodyLength, string method) 
+            : base(creationTime, headers, body, bodyLength)
         {
             URI = query ?? throw new ArgumentNullException(nameof(query));
             Method = method ?? throw new ArgumentNullException(nameof(method));

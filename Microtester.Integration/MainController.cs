@@ -10,6 +10,8 @@ using Utilities.Extensions;
 
 namespace Microtester.Integration
 {
+
+
     [Controller]
     [Microsoft.AspNetCore.Components.Route("")]
     public class MainController : ControllerBase
@@ -22,11 +24,15 @@ namespace Microtester.Integration
         }
 
         [HttpPost]
-        [Microsoft.AspNetCore.Mvc.Route("list")]
+        [Microsoft.AspNetCore.Mvc.Route(MicroTesterClient.ListCasesEndpointPath)]
         public async Task<IActionResult> ListCases([FromBody]ListCasesRequest request)
         {
             var cases = await _db.Cases
-                .IncludeGroup(Groups.All, _db)
+                .Include(c => c.Steps)
+                .ThenInclude(s => s.Request)
+                .Include(c => c.Steps)
+                .ThenInclude(s => s.Response)
+                //.IncludeGroup(Groups.All, _db)
                 .OrderByDescending(c => c.CreationTime)
                 .Skip(request.From)
                 .Take(request.To - request.From)

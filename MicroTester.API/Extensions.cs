@@ -6,7 +6,7 @@ namespace MicroTester.API
     {
         public static IServiceCollection AddMicroTesterClient(this IServiceCollection services)
         {
-            services.AddScoped<IMicroTesterClient, MicroTesterClient>();
+            services.AddScoped<IMicroTesterClient, MicroTesterClientImplementation>();
 
             return services;
         }

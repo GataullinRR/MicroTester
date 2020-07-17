@@ -9,5 +9,6 @@ namespace Microtester.Integration
         public string DbConnectionString { get; set; } = "Server=(localdb)\\mssqllocaldb;Database=MicroTesterDb;Trusted_Connection=True;";
 
         public int PendingStepsLength { get; set; } = 10 * 1024 * 1024;
+        public int MaxBodySize { get; set; } = 10 * 1024;
     }
 }
