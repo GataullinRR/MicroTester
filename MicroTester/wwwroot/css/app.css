@@ -1,4 +1,4 @@
-﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+﻿/*@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');*/
 
 .selected {
     background-color:#d6d5d5;
@@ -21,11 +21,15 @@ div .scrollable {
 }
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     height: 100%;
 }
 
-a, .btn-link {
+#yellow {
+    height: 100%;
+    background: yellow;
+}
+
+/*a, .btn-link {
     color: #0366d6;
 }
 
@@ -197,8 +201,8 @@ app {
         display: none;
     }
 
-    .sidebar .collapse {
+    .sidebar .collapse {*/
         /* Never collapse the sidebar for wide screens */
-        display: block;
+        /*display: block;
     }
-}
+}*/
