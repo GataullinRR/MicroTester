@@ -30,10 +30,6 @@ namespace MicroTester.Example
             services.AddBasicTestCaseExtractor();
 
             services.AddControllers();
-            var assembly = typeof(ICaseExtractor).Assembly;
-            //services.AddControllers()
-            //    .AddApplicationPart(assembly)
-            //    .AddControllersAsServices();
             services.AddRazorPages();
         }
 

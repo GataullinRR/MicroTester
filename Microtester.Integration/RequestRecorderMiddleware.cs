@@ -46,6 +46,7 @@ namespace Microtester.Integration
             context.Response.Body = originalResponse;
 
             if (context.Request.Path != new PathString("/" + MicroTesterClient.ListCasesEndpointPath) 
+                && context.Request.Path != new PathString("/index.html")
                 && responseBodyLength <= options.Value.MaxBodySize)
             {
                 _unhandledSteps.Add(new TestCaseStep(request, response));
@@ -58,7 +59,7 @@ namespace Microtester.Integration
             }
             else
             {
-                logger.LogWarning("Response wont be recorded");
+                logger.LogWarning($"Response to path {context.Request.Path} wont be recorded");
             }
 
             async Task<MicroTester.Db.HttpRequest> getRequest()
