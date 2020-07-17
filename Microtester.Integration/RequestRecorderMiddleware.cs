@@ -85,7 +85,7 @@ namespace Microtester.Integration
                 var body = responseBodyLength == 0
                     ? null
                     : new StreamReader(context.Response.Body, Encoding.UTF8).ReadToEnd();
-                var headers = getHeadersString(context.Request.Headers);
+                var headers = getHeadersString(context.Response.Headers);
 
                 return new MicroTester.Db.HttpResponse(DateTime.UtcNow, headers, body, responseBodyLength, (HttpStatusCode)context.Response.StatusCode, responseDuration);
             }

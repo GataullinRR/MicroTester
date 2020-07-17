@@ -71,14 +71,14 @@
         await base.OnInitializedAsync();
     }
 
-    async Task SelectCaseAsync(TestCase testCase)
+    private async Task SelectCaseAsync(TestCase testCase)
     {
         _selectedCase = testCase;
         _selectedStep = testCase.Steps.FirstOrDefault();
         _actualResponse = null;
     }
 
-    async Task RunAsync(TestCase testCase)
+    private async Task RunAsync(TestCase testCase)
     {
         try
         {
@@ -86,15 +86,7 @@
             await SelectCaseAsync(testCase);
 
             using var client = new HttpClient();
-            var request = new HttpRequestMessage(new HttpMethod(_selectedStep.Request.Method), _selectedStep.Request.URI);
-            if (_selectedStep.Request.Body != null)
-            {
-                request.Content = new StringContent(_selectedStep.Request.Body);
-            }
-            foreach (var header in _selectedStep.Request.Headers)
-            {
-                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
+            var request = CreateRequestMessage(_selectedStep.Request);
             var sw = System.Diagnostics.Stopwatch.StartNew();
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, _cts.Token);
             var content = await response.Content.ReadAsStringAsync();
@@ -106,6 +98,46 @@
             _cts = new System.Threading.CancellationTokenSource();
             _isExecuting = false;
         }
+    }
+
+    // Not sure! (It's my code)
+    private HttpRequestMessage CreateRequestMessage(HttpRequest httpRequest)
+    {
+        var request = new HttpRequestMessage(new HttpMethod(httpRequest.Method), httpRequest.URI);
+        if (httpRequest.Body != null)
+        {
+            request.Content = new StringContent(httpRequest.Body);
+        }
+
+        // Section 7.1 https://tools.ietf.org/html/rfc2616#page-38 
+        // https://docs.microsoft.com/en-us/previous-versions/visualstudio/hh138223(v=vs.118)?redirectedfrom=MSDN
+        var contentHeaders = new string[]
+        {
+            "Allow",
+            "Content-Encoding",
+            "Content-Language",
+            "Content-Length",
+            "Content-Location",
+            "Content-MD5",
+            "Content-Range",
+            "Content-Type",
+            "Expires",
+            "Last-Modified",
+        };
+        foreach (var header in httpRequest.Headers)
+        {
+            if (contentHeaders.Any(ch => ch.Equals(header.Key, StringComparison.OrdinalIgnoreCase)))
+            {
+                request.Content.Headers.Add(header.Key, header.Value);
+            }
+            else
+            {
+#warning some headers arent get copied!
+                request.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+        }
+
+        return request;
     }
 
     async Task CancelAsync()
