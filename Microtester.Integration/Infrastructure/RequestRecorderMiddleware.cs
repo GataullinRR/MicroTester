@@ -77,7 +77,12 @@ namespace MicroTester.Integration
             context.Response.Body = originalResponse;
 
             var pathForbidden = MicroTesterAPIKeys.AllPaths.Any(p => p == context.Request.Path)
-                || context.Request.Path == new PathString("/index.html");
+                || context.Request.Path == new PathString("/index.html")
+                || (context.Request.Path.ToString().Contains("_framework/")
+                    && (context.Request.Path.ToString().EndsWith(".js.gz")
+                        || context.Request.Path.ToString().EndsWith(".json.gz")))
+                || (context.Request.Path.ToString().Contains("css/")
+                    && context.Request.Path.ToString().EndsWith(".css"));
             var requestBodyTooBig = request.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
             var responseBodyTooBig = response.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
             if (pathForbidden)
@@ -142,7 +147,11 @@ namespace MicroTester.Integration
                 : await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
             context.Request.Body.Position = 0;
             var headers = GetHeadersString(context.Request.Headers);
-            var fullUri = new Uri($"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}/{context.Request.QueryString}");
+            var fullUriString = $"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}/{context.Request.QueryString}";
+            fullUriString = fullUriString.EndsWith('/')
+                ? fullUriString[0..^1]
+                : fullUriString;
+            var fullUri = new Uri(fullUriString);
 
             return new MicroTester.Db.HttpRequest(DateTime.UtcNow,
                 fullUri,
