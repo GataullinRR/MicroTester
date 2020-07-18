@@ -16,9 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MicroTester.API\MicroTester.API.csproj" />
     <ProjectReference Include="..\MicroTester.Db\MicroTester.Db.csproj" />
-    <ProjectReference Include="..\Utilities.ASPCore31\Utilities.ASPCore31\Utilities.ASPCore31.csproj" />
-    <ProjectReference Include="..\Utilities.EFCore31\Utilities.EFCore31\Utilities.EFCore31.csproj" />
-    <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj" />
   </ItemGroup>
 
 </Project>

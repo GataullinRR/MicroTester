@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Utilities.Types;
@@ -26,6 +25,7 @@ namespace MicroTester.Db
         {
 
         }
+
         public TestCase(DateTime creationTime, string name, List<TestCaseStep> steps)
         {
             CreationTime = creationTime;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Utilities.Extensions;
 
@@ -10,7 +11,10 @@ namespace MicroTester
 
         public async Task FireCasesStateChangedAsync()
         {
-            await CasesStateChangedAsync.InvokeAndWaitAsync();
+            foreach (var func in @CasesStateChangedAsync?.GetInvocationList()?.Cast<Func<Task>>() ?? Enumerable.Empty<Func<Task>>())
+            {
+                await func();
+            }
         }
     }
 }

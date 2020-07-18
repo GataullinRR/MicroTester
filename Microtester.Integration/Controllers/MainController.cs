@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Components;
 using MicroTester.Db;
 using System;
 using MicroTester.API;
@@ -11,7 +10,7 @@ using Utilities.Extensions;
 namespace MicroTester.Integration
 {
     [Controller]
-    [Microsoft.AspNetCore.Components.Route("")]
+    [Route("")]
     public class MainController : ControllerBase
     {
         readonly TestContext _db;
@@ -22,7 +21,7 @@ namespace MicroTester.Integration
         }
 
         [HttpPost]
-        [Microsoft.AspNetCore.Mvc.Route(MicroTesterAPIKeys.ListCasesEndpointPath)]
+        [Route(MicroTesterAPIKeys.ListCasesEndpointPath)]
         public async Task<IActionResult> ListCases([FromBody]ListCasesRequest request)
         {
             var cases = await _db.Cases
@@ -38,7 +37,7 @@ namespace MicroTester.Integration
         }
 
         [HttpPost]
-        [Microsoft.AspNetCore.Mvc.Route(MicroTesterAPIKeys.UpdateCasesEndpointPath)]
+        [Route(MicroTesterAPIKeys.UpdateCasesEndpointPath)]
         public async Task<IActionResult> UpdateCases([FromBody] UpdateCasesRequest request)
         {
             foreach (var testCase in request.Cases)
