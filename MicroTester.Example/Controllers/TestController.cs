@@ -40,7 +40,7 @@ namespace MicroTester.Example.Controllers
             .ToArray();
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("step1")]
         public StepResponse Step1([Required, FromBody]StepRequest request)
         {
@@ -52,7 +52,7 @@ namespace MicroTester.Example.Controllers
             };
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("step2")]
         public StepResponse Step2([Required, FromBody]StepRequest request)
         {

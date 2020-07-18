@@ -50,7 +50,7 @@ namespace Microtester.Integration
                 && context.Request.Path != new PathString("/index.html")
                 && responseBodyLength <= options.Value.MaxBodySize)
             {
-                _unhandledSteps.Add(new TestCaseStep(request, response));
+                _unhandledSteps.Add(new TestCaseStep(request.URI.PathAndQuery, request, response));
                 var cases = caseExtractor.TryExtractAsync(_unhandledSteps);
                 await foreach (var testCase in cases)
                 {

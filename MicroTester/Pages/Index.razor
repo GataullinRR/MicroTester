@@ -2,7 +2,6 @@
 @implements IDisposable
 @inject IMicroTesterClient MicroTester;
 @inject IEventHub EventHub;
-
 @*(header + footer) https://www.codeply.com/go/ouc3hddx5i*@
 <CascadingValue Name="@CascadingParameters.IsEnabled" Value="!_isExecuting">
     <div class="container-fluid h-100 d-flex flex-column">
@@ -33,28 +32,59 @@
                                 }
                             }
 
-                            <TestCasePinSwitch TestCase="testCase"/>
+                            <TestCasePinSwitch TestCase="testCase" />
                         </span>
                     </div>
                 }
             </div>
 
-            <div class="col border mh-100" style="overflow-y: scroll;">
-                <HttpRequestView Request="_selectedStep?.Request" />
-            </div>
+            <div class="col border mh-100">
+                <div class="container-fluid h-100 d-flex flex-column">
+                    <div class="row" style="min-height:0">
+                        <div class="col border">
+                            <ul class="nav nav-tabs" role="tablist">
+                                @foreach (var step in _selectedCase?.Steps ?? new List<TestCaseStep>())
+                                {
+                                    var activeCalss = step == _selectedStep
+                                        ? "active"
+                                        : "";
+                                    <li class="nav-item">
+                                        <a class="nav-link @activeCalss" role="tab" @onclick="() => SelectStepAsync(step)">@step.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
 
-            <div class="col border mh-100" style="overflow-y: scroll;">
-                <HttpResponseView Response="_selectedStep?.Response" />
-            </div>
+                    @foreach (var step in _selectedCase?.Steps ?? new List<TestCaseStep>())
+                    {
+                        var displayClasses = step == _selectedStep
+                            ? "show active"
+                            : "";
+                        @if (step == _selectedStep)
+                        {
+                            <div class="row flex-fill" style="min-height:0">
+                                <div class="col border mh-100" style="overflow-y: scroll;">
+                                    <HttpRequestView Request="_selectedStep?.Request" />
+                                </div>
 
-            <div class="col border mh-100" style="overflow-y: scroll;">
-                <HttpResponseView Response="_actualResponse" />
+                                <div class="col border mh-100" style="overflow-y: scroll;">
+                                    <HttpResponseView Response="_selectedStep?.Response" />
+                                </div>
+
+                                <div class="col border mh-100" style="overflow-y: scroll;">
+                                    <HttpResponseView Response="_actualResponse" />
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
             </div>
         </div>
     </div>
 </CascadingValue>
 
-@code{ 
+@code{
     readonly List<TestCase> _cases = new List<TestCase>();
     TestCase? _selectedCase;
     TestCaseStep? _selectedStep;
@@ -97,6 +127,15 @@
         _actualResponse = null;
     }
 
+    private async Task SelectStepAsync(TestCaseStep step)
+    {
+        if (_selectedCase?.Steps?.Contains(step) ?? false)
+        {
+            _selectedStep = step;
+            _actualResponse = null;
+        }
+    }
+
     private async Task RunAsync(TestCase testCase)
     {
         try
@@ -105,6 +144,7 @@
             await SelectCaseAsync(testCase);
 
             using var client = new HttpClient();
+            //client.DefaultRequestHeaders.Clear(); 
             var request = CreateRequestMessage(_selectedStep.Request);
             var sw = System.Diagnostics.Stopwatch.StartNew();
             using var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, _cts.Token);
@@ -128,7 +168,7 @@
             request.Content = new StringContent(httpRequest.Body);
         }
 
-        // Section 7.1 https://tools.ietf.org/html/rfc2616#page-38 
+        // Section 7.1 https://tools.ietf.org/html/rfc2616#page-38
         // https://docs.microsoft.com/en-us/previous-versions/visualstudio/hh138223(v=vs.118)?redirectedfrom=MSDN
         var contentHeaders = new string[]
         {
@@ -143,11 +183,15 @@
             "Expires",
             "Last-Modified",
         };
+        // To avoid System.FormatException: Cannot add value because header 'Content-Type' does not support multiple values
+        request.Content.Headers.Clear();
+        request.Headers.Clear();
         foreach (var header in httpRequest.Headers)
         {
             if (contentHeaders.Any(ch => ch.Equals(header.Key, StringComparison.OrdinalIgnoreCase)))
             {
-                request.Content.Headers.Add(header.Key, header.Value);
+                // Try Add so that to avoid: System.FormatException: The format of value 'application/json' is invalid.
+                request.Content.Headers.TryAddWithoutValidation(header.Key, header.Value);
             }
             else
             {

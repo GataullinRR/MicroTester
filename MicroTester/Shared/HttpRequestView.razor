@@ -1,6 +1,9 @@
 ﻿@if (Request != null)
 {
     <p>
+        <span class="wrapped">Uri: @Request.URI</span>
+    </p>
+    <p>
         <HttpHeadersView Headers="Request.Headers" />
     </p>
     <p>

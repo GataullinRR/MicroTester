@@ -3,8 +3,9 @@
     var headers = string.Join(
                 Environment.NewLine,
                 from header in Headers
+                orderby header.Key
                 from headerValue in header.Value.ToArray()
-                select $"{header.Key}:{headerValue}"
+                select $"{header.Key}: {headerValue}"
             );
 
     <span class="wrapped">@headers</span>
