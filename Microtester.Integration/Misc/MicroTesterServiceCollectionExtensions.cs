@@ -6,14 +6,8 @@ using Microsoft.Extensions.Options;
 
 namespace MicroTester.Integration
 {
-    public static class ServicesEx
+    public static class MicroTesterServiceCollectionExtensions
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configuration"><see cref="MicroTesterOptions"/></param>
-        /// <returns></returns>
         public static IServiceCollection AddMicroTesterCore(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MicroTesterOptions>(configuration);

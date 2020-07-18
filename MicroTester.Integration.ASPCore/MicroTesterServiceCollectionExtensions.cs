@@ -26,8 +26,8 @@ namespace MicroTester.Integration.ASPCore
         }
 
         /// <summary>
-        /// Adds: <see cref="ServicesEx.AddMicroTesterCore(IServiceCollection, IConfiguration)"/>,
-        /// <see cref="ServicesEx.AddTestCaseExtractor{TImplementation}(IServiceCollection)"/> and
+        /// Adds: <see cref="Integration.MicroTesterServiceCollectionExtensions.AddMicroTesterCore(IServiceCollection, IConfiguration)"/>,
+        /// <see cref="Integration.MicroTesterServiceCollectionExtensions.AddTestCaseExtractor{TImplementation}(IServiceCollection)"/> and
         /// <see cref="MvcServiceCollectionExtensions.AddRazorPages(IServiceCollection)"/>.
         /// 
         /// Also must be added: <see cref="MicroTesterEndpointRouteBuilderExtensions.MapMicroTester(IEndpointRouteBuilder)"/> and 

@@ -13,13 +13,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MicroTester.Integration.ASPCore
 {
-
     public static class MicroTesterApplicationBuilderExtensions
     {
         /// <summary>
         /// Should be placed at the beginning of Configure method. 
         /// 
-        /// Adds: <see cref="ApplicationEx.UseMicroTesterCore(IApplicationBuilder)"/>,
+        /// Adds: <see cref="Integration.MicroTesterApplicationBuilderExtensions.UseMicroTesterCore(IApplicationBuilder)"/>,
         /// <see cref="ComponentsWebAssemblyApplicationBuilderExtensions.UseBlazorFrameworkFiles(IApplicationBuilder)"/> and
         /// <see cref="StaticFileExtensions.UseStaticFiles(IApplicationBuilder)"/>.
         /// 

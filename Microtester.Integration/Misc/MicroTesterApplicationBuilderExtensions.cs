@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace MicroTester.Integration
 {
-    public static class ApplicationEx
+    public static class MicroTesterApplicationBuilderExtensions
     {
         public static IApplicationBuilder UseMicroTesterCore(this IApplicationBuilder app)
         {
