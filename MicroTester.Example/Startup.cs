@@ -15,21 +15,26 @@ namespace MicroTester.Example
     public class Startup
     {
         public IConfiguration Configuration { get; }
+        public IWebHostEnvironment Environment { get; } 
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            Environment = environment;
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMicroTester(Configuration.GetSection("MicroTester"));
-            //services.AddBasicTestCaseExtractor();
-            services.AddTestCaseExtractor<StepTestCaseExtractor>();
+            if (Environment.IsDevelopment())
+            {
+                services.AddMicroTester(Configuration.GetSection("MicroTester"));
+                //services.AddBasicTestCaseExtractor();
+                services.AddTestCaseExtractor<StepTestCaseExtractor>();
+                services.AddRazorPages();
+            }
 
             services.AddControllers();
-            services.AddRazorPages();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,16 +44,19 @@ namespace MicroTester.Example
             {
                 app.UseBlazorFrameworkFiles();
                 app.UseStaticFiles();
-                app.UseHttpRecorder();
+                app.UseMicroTester();
             }
 
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapFallbackToFile("", "index.html");
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapRazorPages();
+                    endpoints.MapFallbackToFile("", "index.html");
+                }
             });
         }
     }

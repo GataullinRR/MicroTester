@@ -9,7 +9,7 @@ namespace Microtester.Integration
 {
     public static class ApplicationEx
     {
-        public static IApplicationBuilder UseHttpRecorder(this IApplicationBuilder app)
+        public static IApplicationBuilder UseMicroTester(this IApplicationBuilder app)
         {
             app.UseMiddleware<RequestRecorderMiddleware>();
 

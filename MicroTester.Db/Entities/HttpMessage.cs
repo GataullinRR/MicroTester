@@ -41,6 +41,9 @@ namespace MicroTester.Db
         }
 
         public string? Body { get; set; }
+        /// <summary>
+        /// In bytes
+        /// </summary>
         public int BodyLength { get; set; }
 
         protected HttpMessage() 
