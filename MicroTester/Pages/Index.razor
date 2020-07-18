@@ -44,9 +44,9 @@
 </CascadingValue>
 
 @code{
-    RootContext _context = new RootContext();
-    bool _isExecuting;
-    System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
+        RootContext _context = new RootContext();
+        bool _isExecuting;
+        System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
     {
@@ -138,7 +138,10 @@
             "Last-Modified",
         };
         // To avoid System.FormatException: Cannot add value because header 'Content-Type' does not support multiple values
-        request.Content.Headers.Clear();
+        if (request.Content != null)
+        {
+            request.Content.Headers.Clear();
+        }
         request.Headers.Clear();
         foreach (var header in httpRequest.Headers)
         {

@@ -80,7 +80,8 @@ namespace MicroTester.Integration
                 || context.Request.Path == new PathString("/index.html")
                 || (context.Request.Path.ToString().Contains("_framework/")
                     && (context.Request.Path.ToString().EndsWith(".js.gz")
-                        || context.Request.Path.ToString().EndsWith(".json.gz")))
+                        || context.Request.Path.ToString().EndsWith(".json.gz")
+                        || context.Request.Path.ToString().EndsWith(".pdb.gz")))
                 || (context.Request.Path.ToString().Contains("css/")
                     && context.Request.Path.ToString().EndsWith(".css"));
             var requestBodyTooBig = request.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
