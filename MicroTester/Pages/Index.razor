@@ -11,12 +11,14 @@
                 {
                     var isSelected = testCaseContext == _context.SelectedCase;
                     var selectionClass = isSelected ? "selected" : "";
-                    <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCaseContext)">
-                        @testCaseContext.TestCase.Name
-                        <span style="float:right">
+                    <div class="py-3 px-1 d-flex @selectionClass" @onclick="() => SelectCaseAsync(testCaseContext)">
+                        <span class="flex-grow-1">
+                            @testCaseContext.TestCase.Name
+                        </span>
+                        <span class="justify-content-end">
                             @if (!_isExecuting || !isSelected)
                             {
-                                <InlineButton @onclick="() => ExecuteCaseAsync(testCaseContext)">Execute</InlineButton>
+                                <InlineButton @onclick="() => ExecuteCaseAsync(testCaseContext)"><i class="fas fa-lg fa-play no-underline"/></InlineButton>
                             }
                             else
                             {
@@ -27,7 +29,7 @@
                                 else
                                 {
                                     <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
-                                        <InlineButton @onclick="() => CancelAsync()">Cancel</InlineButton>
+                                        <InlineButton @onclick="() => CancelAsync()"><i class="fas fa-lg fa-stop no-underline"/></InlineButton>
                                     </CascadingValue>
                                 }
                             }
@@ -44,9 +46,9 @@
 </CascadingValue>
 
 @code{
-        RootContext _context = new RootContext();
-        bool _isExecuting;
-        System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
+    readonly RootContext _context = new RootContext();
+    bool _isExecuting;
+    System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
     protected override async Task OnInitializedAsync()
     {

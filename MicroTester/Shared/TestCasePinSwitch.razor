@@ -3,11 +3,11 @@
 
 @if (TestCase.IsPinned)
 {
-    <InlineButton @onclick="() => SetPinnedStateAsync(false)">Unpin</InlineButton>
+    <InlineButton @onclick="() => SetPinnedStateAsync(false)"><i class="fas fa-lg fa-star no-underline" /></InlineButton>
 }
 else
 {
-    <InlineButton @onclick="() => SetPinnedStateAsync(true)">Pin</InlineButton>
+    <InlineButton @onclick="() => SetPinnedStateAsync(true)"><i class="far fa-lg fa-star no-underline" /></InlineButton>
 }
 
 @code {

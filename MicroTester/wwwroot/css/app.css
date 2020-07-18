@@ -1,4 +1,8 @@
-﻿.selected {
+﻿a .no-underline {
+    text-decoration: none;
+}
+
+.selected {
     background-color:#d6d5d5;
 }
 

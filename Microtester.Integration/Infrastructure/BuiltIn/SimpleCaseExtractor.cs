@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace MicroTester.Integration
 {
-    class SimpleCaseExtractor : ITestCaseExtractor
+    internal class SimpleCaseExtractor : ITestCaseExtractor
     {
         public async IAsyncEnumerable<TestCase> TryExtractAsync(IList<TestCaseStep> steps)
         {
@@ -12,7 +12,7 @@ namespace MicroTester.Integration
             {
                 yield return new TestCase(
                     DateTime.UtcNow, 
-                    $"{step.Request.Method} {step.Request.URI}", 
+                    $"{step.Request.Method} {step.Request.URI.Scheme} {step.Request.URI.PathAndQuery}", 
                     new List<TestCaseStep> { step });
             }
 
