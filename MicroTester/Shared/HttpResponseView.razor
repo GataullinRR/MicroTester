@@ -3,7 +3,9 @@
     <p>
         <span>Status: @((int)Response.StatusCode) @Response.StatusCode</span>
         <br />
-        <span>Duration: @Response.Duration.ToString("F0") ms</span>
+        <span>Duration: @Response.Duration.ToString("F0") ms </span>
+        <br />
+        <span>Received at: @Response.CreationTime.ToLocalTime().ToString("hh:mm dd.MM.yyyy") (@_requestRelativeTimeString)</span>
     </p>
     <p>
         <HttpHeadersView Headers="Response.Headers" />
@@ -16,4 +18,63 @@
 @code {
     [Parameter]
     public HttpResponse? Response { get; set; }
+
+    string _requestRelativeTimeString;
+
+    protected override Task OnInitializedAsync()
+    {
+        timeUpdateDaemon();
+
+        return base.OnInitializedAsync();
+    }
+
+#warning waste of resources
+    private async void timeUpdateDaemon()
+    {
+        while (true)
+        {
+            UpdateTime();
+
+            await Task.Delay(3000);
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        UpdateTime();
+
+        base.OnParametersSet();
+    }
+
+    private void UpdateTime()
+    {
+        if (Response != null)
+        {
+            _requestRelativeTimeString = GetRelativeTimeText(DateTime.UtcNow - Response.CreationTime);
+        }
+    }
+
+    private string GetRelativeTimeText(TimeSpan timeSpan)
+    {
+        if (timeSpan.TotalSeconds < 10)
+        {
+            return "Just now";
+        }
+        else if (timeSpan.TotalSeconds < 60)
+        {
+            return $"{timeSpan.TotalSeconds:F0} secounds ago";
+        }
+        else if (timeSpan.TotalMinutes < 60)
+        {
+            return $"{timeSpan.TotalMinutes:F0} minutes ago";
+        }
+        else if (timeSpan.TotalHours < 24)
+        {
+            return $"{timeSpan.TotalHours:F0} hours ago";
+        }
+        else
+        {
+            return $"{timeSpan.TotalDays:F0} days ago";
+        }
+    }
 }

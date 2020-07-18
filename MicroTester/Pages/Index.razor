@@ -6,17 +6,17 @@
 <CascadingValue Name="@CascadingParameters.IsEnabled" Value="!_isExecuting">
     <div class="container-fluid h-100 d-flex flex-column">
         <div class="row flex-fill" style="min-height:0">
-            <div class="col border mh-100" style="overflow-y: scroll; max-width:350px;">
-                @foreach (var testCase in _cases)
+            <div class="col mh-100" style="overflow-y: scroll; max-width:350px;">
+                @foreach (var testCaseContext in _context.Cases)
                 {
-                    var isSelected = testCase == _selectedCase;
+                    var isSelected = testCaseContext == _context.SelectedCase;
                     var selectionClass = isSelected ? "selected" : "";
-                    <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCase)">
-                        @testCase.Name
+                    <div class="py-3 px-1 @selectionClass" @onclick="() => SelectCaseAsync(testCaseContext)">
+                        @testCaseContext.TestCase.Name
                         <span style="float:right">
                             @if (!_isExecuting || !isSelected)
                             {
-                                <InlineButton @onclick="() => RunAsync(testCase)">Execute</InlineButton>
+                                <InlineButton @onclick="() => ExecuteCaseAsync(testCaseContext)">Execute</InlineButton>
                             }
                             else
                             {
@@ -32,63 +32,19 @@
                                 }
                             }
 
-                            <TestCasePinSwitch TestCase="testCase" />
+                            <TestCasePinSwitch TestCase="testCaseContext.TestCase" />
                         </span>
                     </div>
                 }
             </div>
 
-            <div class="col border mh-100">
-                <div class="container-fluid h-100 d-flex flex-column">
-                    <div class="row" style="min-height:0">
-                        <div class="col border">
-                            <ul class="nav nav-tabs" role="tablist">
-                                @foreach (var step in _selectedCase?.Steps ?? new List<TestCaseStep>())
-                                {
-                                    var activeCalss = step == _selectedStep
-                                        ? "active"
-                                        : "";
-                                    <li class="nav-item">
-                                        <a class="nav-link @activeCalss" role="tab" @onclick="() => SelectStepAsync(step)">@step.Name</a>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
-                    </div>
-
-                    @foreach (var step in _selectedCase?.Steps ?? new List<TestCaseStep>())
-                    {
-                        var displayClasses = step == _selectedStep
-                            ? "show active"
-                            : "";
-                        @if (step == _selectedStep)
-                        {
-                            <div class="row flex-fill" style="min-height:0">
-                                <div class="col border mh-100" style="overflow-y: scroll;">
-                                    <HttpRequestView Request="_selectedStep?.Request" />
-                                </div>
-
-                                <div class="col border mh-100" style="overflow-y: scroll;">
-                                    <HttpResponseView Response="_selectedStep?.Response" />
-                                </div>
-
-                                <div class="col border mh-100" style="overflow-y: scroll;">
-                                    <HttpResponseView Response="_actualResponse" />
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
+            <TestCaseRRRView Context="_context.SelectedCase" />
         </div>
     </div>
 </CascadingValue>
 
 @code{
-    readonly List<TestCase> _cases = new List<TestCase>();
-    TestCase? _selectedCase;
-    TestCaseStep? _selectedStep;
-    HttpResponse? _actualResponse;
+    RootContext _context = new RootContext();
     bool _isExecuting;
     System.Threading.CancellationTokenSource _cts = new System.Threading.CancellationTokenSource();
 
@@ -109,54 +65,52 @@
     {
         var request = new ListCasesRequest(0, 30);
         var response = await MicroTester.ListCasesAsync(request);
-        _cases.Clear();
-        _cases.AddRange(response.Cases);
-        _selectedCase = _cases.FirstOrDefault(c => c.Id == _selectedCase?.Id);
-        _selectedStep = _selectedCase?.Steps?.FirstOrDefault(s => s.Id == _selectedStep?.Id);
-        _actualResponse = _selectedStep == null
-            ? null
-            : _actualResponse;
+        // Merge just loaded cases with old ones so that to preserve selected case/step and outcomes
+        _context.Reload(response.Cases);
 
-        StateHasChanged(); // Because _cases is not ObservableCollection
+        StateHasChanged(); // Because there are non-observable collection which were changed
     }
 
-    private async Task SelectCaseAsync(TestCase testCase)
+    private async Task SelectCaseAsync(TestCaseContext testCase)
     {
-        _selectedCase = testCase;
-        _selectedStep = testCase.Steps.FirstOrDefault();
-        _actualResponse = null;
+        _context.SelectedCase = testCase;
     }
 
-    private async Task SelectStepAsync(TestCaseStep step)
-    {
-        if (_selectedCase?.Steps?.Contains(step) ?? false)
-        {
-            _selectedStep = step;
-            _actualResponse = null;
-        }
-    }
-
-    private async Task RunAsync(TestCase testCase)
+    private async Task ExecuteCaseAsync(TestCaseContext testCase)
     {
         try
         {
             _isExecuting = true;
-            await SelectCaseAsync(testCase);
 
-            using var client = new HttpClient();
-            //client.DefaultRequestHeaders.Clear(); 
-            var request = CreateRequestMessage(_selectedStep.Request);
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            using var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, _cts.Token);
-            var content = await response.Content.ReadAsStringAsync();
-            var headers = response.Headers.Concat(response.Content.Headers);
-            _actualResponse = new HttpResponse(DateTime.UtcNow, headers, content, content.Length, response.StatusCode, sw.Elapsed.TotalMilliseconds);
+            // So that not to confuce with obsolete data in case of error
+            foreach (var step in testCase.TestCase.Steps)
+            {
+                step.ActualResponse = null;
+            }
+
+            await SelectCaseAsync(testCase); // If wasn't
+
+            foreach (var step in _context.SelectedCase.TestCase.Steps)
+            {
+                await ExecuteStepAsync(step);
+            }
         }
         finally
         {
             _cts = new System.Threading.CancellationTokenSource();
             _isExecuting = false;
         }
+    }
+
+    private async Task ExecuteStepAsync(TestCaseStep step)
+    {
+        using var client = new HttpClient();
+        var request = CreateRequestMessage(step.Request);
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        using var response = await client.SendAsync(request, HttpCompletionOption.ResponseContentRead, _cts.Token);
+        var content = await response.Content.ReadAsStringAsync();
+        var headers = response.Headers.Concat(response.Content.Headers);
+        step.ActualResponse = new HttpResponse(DateTime.UtcNow, headers, content, content.Length, response.StatusCode, sw.Elapsed.TotalMilliseconds);
     }
 
     // Not sure! (It's my code)

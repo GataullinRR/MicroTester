@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Utilities.Types;
 
 namespace MicroTester.Db
@@ -19,6 +21,13 @@ namespace MicroTester.Db
         [Required]
         [Include(Groups.All)]
         public HttpResponse Response { get; set; }
+
+        /// <summary>
+        /// Not mapped, not serialized. Just for convenience
+        /// </summary>
+        [NotMapped]
+        [JsonIgnore]
+        public HttpResponse? ActualResponse { get; set; }
 
         TestCaseStep() 
         { 

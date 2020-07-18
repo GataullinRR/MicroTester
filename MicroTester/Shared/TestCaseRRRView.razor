@@ -1,0 +1,45 @@
+﻿@inject IEventHub EventHub;
+
+<div class="col mh-100">
+    <div class="container-fluid h-100 d-flex flex-column">
+        <div class="row" style="min-height:0">
+            <div class="col">
+                <ul class="nav nav-tabs" role="tablist">
+                    @foreach (var step in Context?.TestCase?.Steps ?? new List<TestCaseStep>())
+                    {
+                        var activeClass = step == Context?.SelectedStep
+                            ? "active"
+                            : "";
+                        <li class="nav-item">
+                            <a class="nav-link @activeClass" role="tab" @onclick="() => SelectStepAsync(step)">@step.Name</a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="row flex-fill" style="min-height:0">
+            <div class="col mh-100" style="overflow-y: scroll;">
+                <HttpRequestView Request="Context?.SelectedStep?.Request" />
+            </div>
+
+            <div class="col mh-100" style="overflow-y: scroll;">
+                <HttpResponseView Response="Context?.SelectedStep?.Response" />
+            </div>
+
+            <div class="col mh-100" style="overflow-y: scroll;">
+                <HttpResponseView Response="Context?.SelectedStep?.ActualResponse" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public TestCaseContext? Context { get; set; }
+
+    private async Task SelectStepAsync(TestCaseStep step)
+    {
+        Context.SelectedStep = step;
+    }
+}
