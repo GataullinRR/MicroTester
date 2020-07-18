@@ -29,7 +29,15 @@ namespace Microtester.Integration
 
         public static IServiceCollection AddBasicTestCaseExtractor(this IServiceCollection services)
         {
-            services.AddScoped<ICaseExtractor, SimpleCaseExtractor>();
+            services.AddTestCaseExtractor<SimpleCaseExtractor>();
+
+            return services;
+        }
+
+        public static IServiceCollection AddTestCaseExtractor<TImplementation>(this IServiceCollection services)
+            where TImplementation : class, ITestCaseExtractor
+        {
+            services.AddScoped<ITestCaseExtractor, TImplementation>();
 
             return services;
         }

@@ -6,6 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Utilities.ASPCore31\Utilities.ASPCore31\Utilities.ASPCore31.csproj" />
     <ProjectReference Include="..\Utilities.EFCore31\Utilities.EFCore31\Utilities.EFCore31.csproj" />
     <ProjectReference Include="..\Utilities\Utilities\Utilities.csproj" />

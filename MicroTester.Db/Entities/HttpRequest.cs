@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
+using Utilities.Types;
 
 namespace MicroTester.Db
 {
@@ -16,15 +17,24 @@ namespace MicroTester.Db
         [Required]
         public string Method { get; set; }
 
+        public KeyValuePair<string, StringValues>[]? QueryValues { get; set; }
+
         public HttpRequest()
         {
 
         }
 
-        public HttpRequest(DateTime creationTime, Uri query, IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, string? body, int bodyLength, string method) 
+        public HttpRequest(DateTime creationTime, 
+            Uri uri,
+            KeyValuePair<string, StringValues>[]? queryValues,
+            IEnumerable<KeyValuePair<string, IEnumerable<string>>> headers, 
+            string? body, 
+            int bodyLength, 
+            string method) 
             : base(creationTime, headers, body, bodyLength)
         {
-            URI = query ?? throw new ArgumentNullException(nameof(query));
+            QueryValues = queryValues;
+            URI = uri ?? throw new ArgumentNullException(nameof(uri));
             Method = method ?? throw new ArgumentNullException(nameof(method));
         }
     }

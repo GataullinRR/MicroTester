@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Collections;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,7 +25,8 @@ namespace MicroTester.Example
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMicroTester(Configuration.GetSection("MicroTester"));
-            services.AddBasicTestCaseExtractor();
+            //services.AddBasicTestCaseExtractor();
+            services.AddTestCaseExtractor<StepTestCaseExtractor>();
 
             services.AddControllers();
             services.AddRazorPages();
@@ -49,7 +48,7 @@ namespace MicroTester.Example
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapFallbackToFile("index.html");
+                endpoints.MapFallbackToFile("", "index.html");
             });
         }
     }

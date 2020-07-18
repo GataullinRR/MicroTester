@@ -27,7 +27,7 @@ namespace Microtester.Integration
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, ICaseExtractor caseExtractor, TestContext db, IOptions<MicroTesterOptions> options, ILogger<RequestRecorderMiddleware> logger)
+        public async Task InvokeAsync(HttpContext context, ITestCaseExtractor caseExtractor, TestContext db, IOptions<MicroTesterOptions> options, ILogger<RequestRecorderMiddleware> logger)
         {
             var request = await getRequest();
 
@@ -74,9 +74,15 @@ namespace Microtester.Integration
                     : await new StreamReader(context.Request.Body, Encoding.UTF8).ReadToEndAsync();
                 context.Request.Body.Position = 0;
                 var headers = getHeadersString(context.Request.Headers);
-                var query = new Uri($"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}/{context.Request.QueryString}");
+                var fullUri = new Uri($"{context.Request.Scheme}://{context.Request.Host}{context.Request.Path}/{context.Request.QueryString}");
 
-                return new MicroTester.Db.HttpRequest(DateTime.UtcNow, query, headers, body, (int)requestStream.Length, context.Request.Method);
+                return new MicroTester.Db.HttpRequest(DateTime.UtcNow, 
+                    fullUri, 
+                    context.Request.Query.ToArray(), 
+                    headers,
+                    body, 
+                    (int)requestStream.Length, 
+                    context.Request.Method);
             }
 
             async Task<MicroTester.Db.HttpResponse> getResponse()

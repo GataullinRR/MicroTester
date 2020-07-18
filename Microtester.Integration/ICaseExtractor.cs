@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Microtester.Integration
 {
-    public interface ICaseExtractor
+    public interface ITestCaseExtractor
     {
         IAsyncEnumerable<TestCase> TryExtractAsync(IList<TestCaseStep> steps);
     }
