@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 //using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     public class MicroTesterOptions
     {

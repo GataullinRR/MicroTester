@@ -15,7 +15,7 @@ using System.Threading;
 using System.Runtime.InteropServices.ComTypes;
 //using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     // See: https://elanderson.net/2019/12/log-requests-and-responses-in-asp-net-core-3/
     // See also: MS response caching
@@ -82,7 +82,7 @@ namespace Microtester.Integration
             var responseBodyTooBig = response.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
             if (pathForbidden)
             {
-                _logger.LogWarning($"Response to path {context.Request.Path} wont be recorded (the path is not subjected to be recorded)");
+                _logger.LogWarning($"Response to path {context.Request.Path} wont be recorded (the path is not subjected to recording)");
             }
             else if(requestBodyTooBig)
             {

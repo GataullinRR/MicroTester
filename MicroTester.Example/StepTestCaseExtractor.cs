@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microtester.Integration;
+using MicroTester.Integration;
 using MicroTester.Db;
 using Newtonsoft.Json;
 using MicroTester.Example.Controllers;

@@ -4,7 +4,7 @@ using MicroTester.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     public static class ServicesEx
     {
@@ -14,7 +14,7 @@ namespace Microtester.Integration
         /// <param name="services"></param>
         /// <param name="configuration"><see cref="MicroTesterOptions"/></param>
         /// <returns></returns>
-        public static IServiceCollection AddMicroTester(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddMicroTesterCore(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<MicroTesterOptions>(configuration);
             services.AddTransient(sp => sp.GetRequiredService<IOptions<MicroTesterOptions>>().Value);

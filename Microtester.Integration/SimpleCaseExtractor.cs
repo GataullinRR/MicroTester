@@ -2,7 +2,7 @@
 using MicroTester.Db;
 using System.Collections.Generic;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     class SimpleCaseExtractor : ITestCaseExtractor
     {

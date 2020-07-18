@@ -5,11 +5,11 @@ using Microsoft.Extensions.Primitives;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     public static class ApplicationEx
     {
-        public static IApplicationBuilder UseMicroTester(this IApplicationBuilder app)
+        public static IApplicationBuilder UseMicroTesterCore(this IApplicationBuilder app)
         {
             app.UseMiddleware<RequestRecorderMiddleware>();
 

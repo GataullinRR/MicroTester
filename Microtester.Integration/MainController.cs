@@ -8,7 +8,7 @@ using MicroTester.API;
 using Microsoft.EntityFrameworkCore;
 using Utilities.Extensions;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     [Controller]
     [Microsoft.AspNetCore.Components.Route("")]

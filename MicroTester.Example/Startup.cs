@@ -7,8 +7,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microtester.Integration;
+using MicroTester.Integration;
 using Microsoft.AspNetCore.ResponseCompression;
+using MicroTester.Integration.ASPCore;
 
 namespace MicroTester.Example
 {
@@ -26,13 +27,7 @@ namespace MicroTester.Example
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            if (Environment.IsDevelopment())
-            {
-                services.AddMicroTester(Configuration.GetSection("MicroTester"));
-                //services.AddBasicTestCaseExtractor();
-                services.AddTestCaseExtractor<StepTestCaseExtractor>();
-                services.AddRazorPages();
-            }
+            services.AddMicroTester(Configuration.GetSection("MicroTester"), Environment.IsDevelopment());
 
             services.AddControllers();
         }
@@ -40,23 +35,14 @@ namespace MicroTester.Example
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseBlazorFrameworkFiles();
-                app.UseStaticFiles();
-                app.UseMicroTester();
-            }
-
+            app.UseMicroTester(env.IsDevelopment());
+            
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                if (env.IsDevelopment())
-                {
-                    endpoints.MapRazorPages();
-                    endpoints.MapFallbackToFile("", "index.html");
-                }
+                endpoints.MapMicroTester(env.IsDevelopment());
             });
         }
     }

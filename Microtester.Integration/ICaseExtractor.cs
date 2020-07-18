@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 //using Microsoft.AspNetCore.Components.WebAssembly.Server;
 
-namespace Microtester.Integration
+namespace MicroTester.Integration
 {
     public interface ITestCaseExtractor
     {
