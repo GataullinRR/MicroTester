@@ -3,22 +3,26 @@
 @inject IMicroTesterClient MicroTester;
 @inject IEventHub EventHub;
 @*(header + footer) https://www.codeply.com/go/ouc3hddx5i*@
+@*Bootstrap builder (i didnt use it, but it can be usefull) https://bootstrapshuffle.com/editor?project=39ae79af9a6382e8d60cc3985cdb9536698bb012*@
 <CascadingValue Name="@CascadingParameters.IsEnabled" Value="!_isExecuting">
     <div class="container-fluid h-100 d-flex flex-column">
         <div class="row flex-fill" style="min-height:0">
-            <div class="col mh-100" style="overflow-y: scroll; max-width:350px;">
+            <div class="col mh-100" style="overflow-y:scroll; max-width:350px; overflow-x:hidden;">
                 @foreach (var testCaseContext in _context.Cases)
                 {
                     var isSelected = testCaseContext == _context.SelectedCase;
                     var selectionClass = isSelected ? "selected" : "";
-                    <div class="py-3 px-1 d-flex @selectionClass" @onclick="() => SelectCaseAsync(testCaseContext)">
-                        <span class="flex-grow-1">
+
+                    <div class="py-2 px-2 mx-n3 d-flex flex-row flex-fill @selectionClass" @onclick="() => SelectCaseAsync(testCaseContext)">
+                        <span class="flex-column flex-grow-1">
                             @testCaseContext.TestCase.Name
                         </span>
-                        <span class="justify-content-end">
+                        <span class="flex-column flex-shrink-0 pl-2">
+                            <TestCasePinSwitch TestCase="testCaseContext.TestCase" />
+
                             @if (!_isExecuting || !isSelected)
                             {
-                                <InlineButton @onclick="() => ExecuteCaseAsync(testCaseContext)"><i class="fas fa-lg fa-play no-underline"/></InlineButton>
+                                <InlineButton @onclick="() => ExecuteCaseAsync(testCaseContext)"><i class="fas fa-lg fa-play no-underline" /></InlineButton>
                             }
                             else
                             {
@@ -29,12 +33,10 @@
                                 else
                                 {
                                     <CascadingValue Name="@CascadingParameters.IsEnabled" Value="true">
-                                        <InlineButton @onclick="() => CancelAsync()"><i class="fas fa-lg fa-stop no-underline"/></InlineButton>
+                                        <InlineButton @onclick="() => CancelAsync()"><i class="fas fa-lg fa-stop no-underline" /></InlineButton>
                                     </CascadingValue>
                                 }
                             }
-
-                            <TestCasePinSwitch TestCase="testCaseContext.TestCase" />
                         </span>
                     </div>
                 }

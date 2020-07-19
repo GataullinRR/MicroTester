@@ -3,8 +3,8 @@
 <div class="col mh-100">
     <div class="container-fluid h-100 d-flex flex-column">
         <div class="row">
-            <div class="col">
-                <ul class="nav nav-tabs" role="tablist">
+            <div class="col mx-n2">
+                <ul class="nav nav-tabs mx-n2" role="tablist">
                     @foreach (var step in Context?.TestCase?.Steps ?? new List<TestCaseStep>())
                     {
                         var activeClass = step == Context?.SelectedStep
@@ -19,15 +19,15 @@
         </div>
 
         <div class="row flex-fill" style="min-height:0">
-            <div class="col mh-100" style="overflow-y: scroll;">
+            <div class="col mh-100 mr-n2" style="overflow-y: scroll;">
                 <HttpRequestView Request="Context?.SelectedStep?.Request" />
             </div>
 
-            <div class="col mh-100" style="overflow-y: scroll;">
+            <div class="col mh-100 mr-n2" style="overflow-y: scroll;">
                 <HttpResponseView Response="Context?.SelectedStep?.Response" />
             </div>
 
-            <div class="col mh-100" style="overflow-y: scroll;">
+            <div class="col mh-100 mr-n2" style="overflow-y: scroll;">
                 <HttpResponseView Response="Context?.SelectedStep?.ActualResponse" />
             </div>
         </div>
