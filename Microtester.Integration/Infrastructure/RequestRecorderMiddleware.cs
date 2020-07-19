@@ -83,7 +83,9 @@ namespace MicroTester.Integration
                         || context.Request.Path.ToString().EndsWith(".json.gz")
                         || context.Request.Path.ToString().EndsWith(".pdb.gz")))
                 || (context.Request.Path.ToString().Contains("css/")
-                    && context.Request.Path.ToString().EndsWith(".css"));
+                    && context.Request.Path.ToString().EndsWith(".css"))
+                || context.Request.Path.ToString().EndsWith(".css")
+                || context.Request.Path.ToString().EndsWith(".js");
             var requestBodyTooBig = request.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
             var responseBodyTooBig = response.BodyLength > (_options?.Value?.MaxBodySize ?? 0);
             if (pathForbidden)

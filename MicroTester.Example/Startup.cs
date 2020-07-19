@@ -28,6 +28,8 @@ namespace MicroTester.Example
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMicroTester(Configuration.GetSection("MicroTester"), Environment.IsDevelopment());
+            // Try also:
+            //services.AddMicroTester<StepTestCaseExtractor>(Configuration.GetSection("MicroTester"), Environment.IsDevelopment());
 
             services.AddControllers();
         }

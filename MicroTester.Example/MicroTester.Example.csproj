@@ -6,10 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="3.2.0" />
     <ProjectReference Include="..\MicroTester.Integration.ASPCore\MicroTester.Integration.ASPCore.csproj" />
     <ProjectReference Include="..\MicroTester\MicroTester.csproj" />
   </ItemGroup>
-
 
 </Project>
