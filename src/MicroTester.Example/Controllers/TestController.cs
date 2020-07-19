@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
-namespace MicroTester.Example.Controllers
+namespace MicroTester.ExampleApp.Controllers
 {
     [ApiController]
     [Route("test")]

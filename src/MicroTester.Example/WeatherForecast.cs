@@ -1,6 +1,6 @@
 using System;
 
-namespace MicroTester.Example
+namespace MicroTester.ExampleApp
 {
     public class WeatherForecast
     {

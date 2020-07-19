@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MicroTester.Example.Controllers
+namespace MicroTester.ExampleApp.Controllers
 {
     public class StepResponse
     {

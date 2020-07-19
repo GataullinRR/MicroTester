@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
-namespace MicroTester.Example.Controllers
+namespace MicroTester.ExampleApp.Controllers
 {
     public class StepRequest
     {

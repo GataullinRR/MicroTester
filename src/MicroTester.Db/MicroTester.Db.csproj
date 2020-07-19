@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Utilities.EFCore31\Utilities.EFCore31\Utilities.EFCore31.csproj" />
+    <ProjectReference Include="..\..\Utilities.EFCore31\Utilities.EFCore31\Utilities.EFCore31.csproj" />
   </ItemGroup>
 
 </Project>

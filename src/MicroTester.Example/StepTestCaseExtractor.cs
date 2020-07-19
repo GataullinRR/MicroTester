@@ -4,12 +4,12 @@ using System.Linq;
 using MicroTester.Integration;
 using MicroTester.Db;
 using Newtonsoft.Json;
-using MicroTester.Example.Controllers;
+using MicroTester.ExampleApp.Controllers;
 using Microsoft.Extensions.Primitives;
 
-namespace MicroTester.Example
+namespace MicroTester.ExampleApp
 {
-    class StepTestCaseExtractor : ITestCaseExtractor
+    public class StepTestCaseExtractor : ITestCaseExtractor
     {
         public async IAsyncEnumerable<TestCase> TryExtractAsync(IList<TestCaseStep> steps)
         {

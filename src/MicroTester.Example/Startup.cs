@@ -11,7 +11,7 @@ using MicroTester.Integration;
 using Microsoft.AspNetCore.ResponseCompression;
 using MicroTester.Integration.ASPCore;
 
-namespace MicroTester.Example
+namespace MicroTester.ExampleApp
 {
     public class Startup
     {
